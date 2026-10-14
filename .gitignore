@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+*.local
+.DS_Store
+.vscode/
+.idea/
+*.log
+.vite/
+# participants' own Vite project inside the scratch pad
