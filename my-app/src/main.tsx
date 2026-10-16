@@ -6,9 +6,13 @@ import "./index.css";
 
 import { RouterProvider } from "react-router";
 import { router } from "./route/router";
+import { WishlistProvider } from "./context/WishlistContext";
 
 createRoot(document.getElementById("root")!).render(
 //   <StrictMode>
-    <RouterProvider router={router} />
+    <WishlistProvider>
+        <RouterProvider router={router} />
+    </WishlistProvider>
+
 //   </StrictMode>,
 );
