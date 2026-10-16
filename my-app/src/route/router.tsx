@@ -4,10 +4,12 @@ import {
   Route,
 } from "react-router";
 import Inbox from "../components/Inbox";
-import ProductGrid from "../components/ProductGrid";
+import ProductGrid, { productGridLoader } from "../components/ProductGrid";
 import Register from "../components/Register";
 import { AppLayout } from "../components/AppLayout";
-import ProductDetail from "../components/ProductDetail";
+import ProductDetail, { type Product } from "../components/ProductDetail";
+import axios from "axios";
+import {RouteErrorBoundary} from "../components/RouteErrorBoundary";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +23,8 @@ export const router = createBrowserRouter([
       {
         path: "products",
         Component: ProductGrid,
+        loader: productGridLoader,
+        ErrorBoundary: RouteErrorBoundary
       },
       {
         path: "products/:id",

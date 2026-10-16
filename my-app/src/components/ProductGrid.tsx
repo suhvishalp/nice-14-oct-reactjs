@@ -1,17 +1,55 @@
-
-
 import ProductCard from "./ProductCard";
-import { useFetch } from "../hook/useFetch";
+import { useLoaderData, useRouteLoaderData } from "react-router";
+import axios from "axios";
+import type { Product } from "./ProductDetail";
+
+export interface ProductListResponse {
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+export interface Category {
+  slug: string;
+  name: string;
+  url: string;
+}
+
+export async function productGridLoader(request) {
+  try {
+    const [productsResponse, categoriesResponse] = await Promise.all([
+
+      axios.get<ProductListResponse>("https://dummyjson.com/products", {
+        params: { limit: 10 },
+        signal: request.signal,
+      }),
+
+      axios.get<Category[]>("https://dummyjson.com/products/categories", {
+        signal: request.signal,
+      }),
+    ]);
+
+    return {
+      products: productsResponse.data.products,
+      categories: categoriesResponse.data,
+    };
+  } catch (error) {
+    if (request.signal.aborted) {
+      throw error;
+    }
+
+    throw new Response("Failed to load products or categories", {
+      status: 500,
+      statusText: "Internal Server Error",
+    });
+  }
+}
 
 export default function ProductGrid() {
-  
-   const {data: productsData, loading: productsLoading, error: productsError} =  useFetch("https://dummyjson.com/products")
+  console.log("ProductGrid Rendered");
 
-   const {data: categoryData, loading: categoriesLoading, error: categoriesError } =  useFetch('https://dummyjson.com/products/categories')
-  
-
-   const products = productsData?.products ?? [] 
-   const categories = categoryData
+  const {products, categories} = useLoaderData();
 
   return (
     <div className="container py-4">
@@ -20,13 +58,13 @@ export default function ProductGrid() {
       {/* Categories */}
       <h4 className="mt-4">Categories</h4>
 
-      {categoriesLoading && <p>Loading categories...</p>}
+      {/* {categoriesLoading && <p>Loading categories...</p>} */}
 
-      {categoriesError && (
+      {/* {categoriesError && (
         <p className="text-danger">{categoriesError}</p>
-      )}
+      )} */}
 
-      {!categoriesLoading && !categoriesError && (
+      {categories && (
         <div className="d-flex flex-wrap gap-2 mb-4">
           {categories.map((category) => (
             <span
@@ -42,19 +80,16 @@ export default function ProductGrid() {
       {/* Products */}
       <h4>Products</h4>
 
-      {productsLoading && <p>Loading products...</p>}
+      {/* {productsLoading && <p>Loading products...</p>} */}
 
-      {productsError && (
+      {/* {productsError && (
         <p className="text-danger">{productsError}</p>
-      )}
+      )} */}
 
-      {!productsLoading && !productsError && (
+      {products && (
         <div className="row g-3">
           {products.map((product) => (
-            <div
-              key={product.id}
-              className="col-12 col-sm-6 col-md-4 col-lg-3"
-            >
+            <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
               <ProductCard product={product} />
             </div>
           ))}

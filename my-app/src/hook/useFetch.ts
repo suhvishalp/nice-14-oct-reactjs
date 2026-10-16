@@ -11,6 +11,7 @@ export function useFetch(url) {
     const controller = new AbortController();
 
     async function load() {
+      console.log('started fetching data...')
       try {
         setLoading(true);
         setError(null);
@@ -18,9 +19,8 @@ export function useFetch(url) {
         const { data } = await axios.get(url, { signal: controller.signal }
         );
 
-        console.log(data)
-
         setData(data);
+        console.log('data fetch complete')
 
       } catch (error) {
         if (!controller.signal.aborted) {
