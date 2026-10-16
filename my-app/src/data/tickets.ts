@@ -59,10 +59,19 @@ export interface Queue {
 }
 
 export const queues: Queue[] = [
-  { id: 'inbox', label: 'Inbox', count: 12 },
-  { id: 'mine', label: 'My tickets', count: 4 },
-  { id: 'unassigned', label: 'Unassigned', count: 3 },
-  { id: 'billing', label: 'Billing', count: 5 },
-  { id: 'technical', label: 'Technical', count: 7 },
-  { id: 'resolved', label: 'Resolved', count: 31 },
-]
+  {
+    id: "inbox",
+    label: "Inbox",
+    count: 12,
+  },
+  {
+    id: "register",
+    label: "Register",
+    count: 5,
+  },
+  {
+    id: "products",
+    label: "Products",
+    count: 6,
+  }
+];

@@ -1,12 +1,14 @@
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 export default function ProductCard({ product }) {
 
-    // const [data, setData] = useState([]);
-    //   const [loading, setLoading] = useState(true);
-    //   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
 
-    //useEffect()   //fetch the reviews of this specific product 
+  function handleViewDetails(){
+    navigate(`/products/${product.id}`)
+  }   
 
 
   return (
@@ -31,6 +33,9 @@ export default function ProductCard({ product }) {
         <p className="text-muted">
           {product.category}
         </p>
+
+        <Button onClick={handleViewDetails} className="btn btn-primary">View Details</Button>
+
       </div>
     </div>
   );

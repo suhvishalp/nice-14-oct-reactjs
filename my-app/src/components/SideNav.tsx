@@ -1,28 +1,43 @@
-import { Badge, ListGroup } from 'react-bootstrap'
-import type { Queue } from '../data/tickets'
+import { Badge, ListGroup } from "react-bootstrap";
+import { NavLink } from "react-router";
+import type { Queue } from "../data/tickets";
 
 interface SideNavProps {
-  queues: Queue[]
-  activeId: string
+  queues: Queue[];
 }
 
-export function SideNav({ queues, activeId }: SideNavProps) {
+export function SideNav({ queues }: SideNavProps) {
   return (
     <ListGroup variant="flush">
-      {queues.map((queue) => (
-        <ListGroup.Item
-          key={queue.id}
-          action
-          href={`#${queue.id}`}
-          active={queue.id === activeId}
-          className="d-flex justify-content-between align-items-center"
-        >
-          {queue.label}
-          <Badge bg="secondary" pill>
-            {queue.count}
-          </Badge>
-        </ListGroup.Item>
-      ))}
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          `list-group-item list-group-item-action
+           ${isActive ? "active" : ""}`
+        }
+      >
+        Inbox
+      </NavLink>
+
+      <NavLink
+        to="/products"
+        className={({ isActive }) =>
+          `list-group-item list-group-item-action
+           ${isActive ? "active" : ""}`
+        }
+      >
+        Products
+      </NavLink>
+
+      <NavLink
+        to="/register"
+        className={({ isActive }) =>
+          `list-group-item list-group-item-action
+           ${isActive ? "active" : ""}`
+        }
+      >
+        Register
+      </NavLink>
     </ListGroup>
-  )
+  );
 }
