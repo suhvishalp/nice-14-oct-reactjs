@@ -35,8 +35,12 @@ export function filterProducts(products: Product[], { query = '', category = 'al
 export type SortKey = '' | 'price-asc' | 'price-desc' | 'rating-desc';
 
 // TODO(lab-1.2): sort by price or rating WITHOUT mutating the input array
-export function applySort(products: Product[], _sort: SortKey): Product[] {
-  return products;
+export function applySort(products: Product[], sort: SortKey): Product[] {
+  if (!sort) return products;
+  // split() gives string[]; the assertion says which two strings — safe because SortKey is a closed union
+  const [field, direction] = sort.split('-') as ['price' | 'rating', 'asc' | 'desc'];
+  const sign = direction === 'desc' ? -1 : 1;
+  return [...products].sort((a, b) => (a[field] - b[field]) * sign);
 }
 
 /** A neutral thumbnail for products created locally, so the card never shows a broken image. */

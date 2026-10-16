@@ -28,3 +28,5 @@ export interface CategoryOption {
   name: string;
   count?: number;
 }
+
+export type ProductDraft = Pick<Product, 'title' | 'price' | 'category' | 'stock' | 'description'>;

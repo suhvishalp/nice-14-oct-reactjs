@@ -31,3 +31,11 @@ export interface CategoryOption {
   name: string;
   count?: number;
 }
+
+
+export interface ProductListResponse {
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+}

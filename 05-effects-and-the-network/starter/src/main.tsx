@@ -3,6 +3,18 @@ import { createRoot } from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.min.css'; // ← must come before ./index.css
 import './index.css';
 import App from './App';
+import axios from 'axios';
+
+axios.interceptors.request.use(
+  (config)=>{
+    console.log('intercepting axios request')
+    config.headers.set('Authorization', 'BEARER SOMETOKEN')
+    return config;
+  },
+  (error)=>{
+    return Promise.reject(error)
+  }
+)
 
 /**
  * The entry point. Three things happen here and nowhere else:
@@ -18,7 +30,6 @@ import App from './App';
  *     graph; there is no <link> tag in the HTML.
  */
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <App />
-  </StrictMode>,
+
 );

@@ -1,17 +1,30 @@
-import { useState } from 'react';
-import { Alert, Button, ButtonGroup, Container } from 'react-bootstrap';
-import { Grid, Grid3x3Gap, PlusLg } from 'react-bootstrap-icons';
-import { SiteHeader } from './components/SiteHeader';
-import { PageHeader } from './components/PageHeader';
-import { CategoryStrip } from './components/CategoryStrip';
-import { ProductToolbar } from './components/ProductToolbar';
-import { ProductGrid } from './components/ProductGrid';
-import { ProductForm } from './components/ProductForm';
-import { ConfirmDialog } from './components/ConfirmDialog';
-import { products as initialProducts } from './data/products';
-import { applySort, buildCategories, filterProducts, PLACEHOLDER_THUMBNAIL } from './lib/catalog';
-import type { SortKey } from './lib/catalog';
-import type { Density, Product, ProductDraft } from './types';
+import { useEffect, useState } from "react";
+import { Alert, Button, ButtonGroup, Container } from "react-bootstrap";
+import { Grid, Grid3x3Gap, PlusLg } from "react-bootstrap-icons";
+import { SiteHeader } from "./components/SiteHeader";
+import { PageHeader } from "./components/PageHeader";
+import { CategoryStrip } from "./components/CategoryStrip";
+import { ProductToolbar } from "./components/ProductToolbar";
+import { ProductGrid } from "./components/ProductGrid";
+import { ProductForm } from "./components/ProductForm";
+import { ConfirmDialog } from "./components/ConfirmDialog";
+import { products as initialProducts } from "./data/products";
+import {
+  applySort,
+  buildCategories,
+  filterProducts,
+  PLACEHOLDER_THUMBNAIL,
+} from "./lib/catalog";
+import type { SortKey } from "./lib/catalog";
+import type {
+  Density,
+  Product,
+  ProductDraft,
+  ProductListResponse,
+} from "./types";
+import axios from "axios";
+import { CardSkeletons } from "./components/Skeletons";
+import { ErrorNotice } from "./components/ErrorNotice";
 
 export default function App() {
   // The catalogue is STATE now — the form adds to it and the trash button removes from it.
@@ -19,13 +32,19 @@ export default function App() {
   // TODO(lab-2.1): loading + error (unknown) state, and render CardSkeletons / ErrorNotice
   // TODO(lab-3.2): a reloadKey so Retry re-runs the effect
   // TODO(lab-4.1): AbortController — cancel on unmount, ignore axios.isCancel, guard setLoading
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+
+  const LIST_FIELDS =
+    "id,title,description,category,price,discountPercentage,rating,stock,brand,thumbnail";
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
 
   // What the user is looking at
-  const [query, setQuery] = useState('');
-  const [sort, setSort] = useState<SortKey>('');
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [density, setDensity] = useState<Density>('comfortable');
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortKey>("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [density, setDensity] = useState<Density>("comfortable");
 
   // Lifted from ProductCard: ONE list of ids, so filtering a card away can't lose it
   const [wishlist, setWishlist] = useState<number[]>([]);
@@ -35,13 +54,20 @@ export default function App() {
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
 
+  const [reloadKey, setReloadKey] = useState(0);
+
   // DERIVED on every render — none of these are stored
   const categories = buildCategories(products);
-  const visibleProducts = applySort(filterProducts(products, { query, category: activeCategory }), sort);
+  const visibleProducts = applySort(
+    filterProducts(products, { query, category: activeCategory }),
+    sort,
+  );
 
   function toggleWishlist(id: number) {
     // Immutable update: filter() and spread both return NEW arrays
-    setWishlist((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
+    setWishlist((current) =>
+      current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
+    );
   }
 
   function handleCreate(payload: ProductDraft) {
@@ -67,6 +93,37 @@ export default function App() {
     setFlash(`“${product.title}” deleted.`);
   }
 
+  useEffect(() => {
+    const controller = new AbortController()
+    async function load() {
+      try {
+        setLoading(true);
+        setError(null);
+         const { data } = await axios.get<ProductListResponse>(
+          "https://dummyjson.com/products",
+          {
+            params: { limit: 0, select: LIST_FIELDS },
+            signal: controller.signal
+          },
+        );
+        console.log(data.products);
+        setProducts(data.products);
+      
+      } catch (error) {
+           if(!controller.signal.aborted)
+              setError(error);
+      } finally {
+          if(!controller.signal.aborted)
+              setLoading(false);
+      }
+    }
+
+    load();
+
+   return () => controller.abort()
+
+  }, [reloadKey]);
+
   return (
     <>
       <SiteHeader cartCount={3} wishlistCount={wishlist.length} />
@@ -79,17 +136,23 @@ export default function App() {
             <>
               <ButtonGroup size="sm" aria-label="Grid density">
                 <Button
-                  variant={density === 'comfortable' ? 'secondary' : 'outline-secondary'}
-                  aria-pressed={density === 'comfortable'}
-                  onClick={() => setDensity('comfortable')}
+                  variant={
+                    density === "comfortable"
+                      ? "secondary"
+                      : "outline-secondary"
+                  }
+                  aria-pressed={density === "comfortable"}
+                  onClick={() => setDensity("comfortable")}
                 >
                   <Grid className="me-1" />
                   Comfortable
                 </Button>
                 <Button
-                  variant={density === 'compact' ? 'secondary' : 'outline-secondary'}
-                  aria-pressed={density === 'compact'}
-                  onClick={() => setDensity('compact')}
+                  variant={
+                    density === "compact" ? "secondary" : "outline-secondary"
+                  }
+                  aria-pressed={density === "compact"}
+                  onClick={() => setDensity("compact")}
                 >
                   <Grid3x3Gap className="me-1" />
                   Compact
@@ -117,18 +180,37 @@ export default function App() {
           resultCount={visibleProducts.length}
         />
 
-        <CategoryStrip categories={categories} activeId={activeCategory} onSelect={setActiveCategory} />
-
-        <ProductGrid
-          products={visibleProducts}
-          density={density}
-          wishlist={wishlist}
-          onToggleSave={toggleWishlist}
-          onDelete={setPendingDelete}
+        <CategoryStrip
+          categories={categories}
+          activeId={activeCategory}
+          onSelect={setActiveCategory}
         />
+
+        <ErrorNotice error={error} onRetry={() => setReloadKey((k) => k + 1)} />
+
+        {loading ? (
+          
+          <CardSkeletons />
+        
+        ) : (
+
+          <ProductGrid
+            products={visibleProducts}
+            density={density}
+            wishlist={wishlist}
+            onToggleSave={toggleWishlist}
+            onDelete={setPendingDelete}
+          />
+        )}
+
       </Container>
 
-      <ProductForm show={showForm} categories={categories} onCreate={handleCreate} onClose={() => setShowForm(false)} />
+      <ProductForm
+        show={showForm}
+        categories={categories}
+        onCreate={handleCreate}
+        onClose={() => setShowForm(false)}
+      />
 
       <ConfirmDialog
         show={!!pendingDelete}

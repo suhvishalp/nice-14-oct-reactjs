@@ -19,7 +19,7 @@ export function PriceTag({ price, discountPercentage = 0, size = 'md' }: PriceTa
     <div className="d-flex flex-wrap align-items-baseline gap-2">
       <span className={`fw-semibold ${SIZES[size]}`}>{formatPrice(finalPrice)}</span>
 
-      {hasDiscount && (
+     {hasDiscount && (
         <>
           <s className="text-muted small">{formatPrice(price)}</s>
           <span className="text-success small fw-medium">{Math.round(discountPercentage)}% off</span>

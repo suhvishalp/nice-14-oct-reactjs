@@ -11,10 +11,13 @@ const COLUMNS: Record<Density, { xs: number; sm: number; md: number; xl: number 
 interface ProductGridProps {
   products: Product[];
   density?: Density;
+  wishlist?: number[];                    // product ids
+  onToggleSave?: (id: number) => void;
+  onDelete?: (product: Product) => void;
 }
 
 // TODO(lab-2.2): accept wishlist/onToggleSave (and later onDelete) and pass them to each card
-export function ProductGrid({ products, density = 'comfortable' }: ProductGridProps) {
+export function ProductGrid({ products, density = 'comfortable', wishlist = [], onToggleSave, onDelete }: ProductGridProps) {
   // The empty state is a whole different view, so it is an early return —
   // not a ternary wrapped around the grid.
   if (products.length === 0) {
@@ -32,7 +35,12 @@ export function ProductGrid({ products, density = 'comfortable' }: ProductGridPr
       {products.map((product) => (
         // key goes on the OUTERMOST element the callback returns — the Col, not the card
         <Col key={product.id}>
-          <ProductCard product={product} density={density} />
+          <ProductCard 
+            product={product} 
+            density={density} 
+            onDelete={onDelete}
+            saved={wishlist.includes(product.id)}
+            onToggleSave={onToggleSave}/>
         </Col>
       ))}
     </Row>

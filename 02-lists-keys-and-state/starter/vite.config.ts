@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react';
 // so there is no CSS plugin, no PostCSS, no tailwind.config — one plugin.
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5173, host: true },
+  server: { port: 5174, host: true },
 });

@@ -1,0 +1,108 @@
+
+Setup 
+--------------
+    - nodejs v22
+    - VS Code Editor    
+            - Auto Import - ES6, TS, JSX, TSX
+            - Reactjs snippets
+            - Prettier 
+
+
+ReactJS 
+-------------
+    - javascript library for UI, frontend, web development 
+
+Language                        Library                     Framework 
+-----------------               ------------                --------------
+JavaScript /                    ReactJS                     Angular 
+TypeScript                      UI Libraries                NextJS, Remix, React Router V7, Expo
+                                Bootstrap                   TanStack
+
+Build Tools 
+---------------
+    - webpack 
+    - vite 
+    - parcel
+    - 
+
+
+Create ReactJS Project 
+---------------------------
+    1. [deprecated] CRA (create-react-app) cli tool 
+    2. using vite 
+    3. using frameworks like NextJS, Remix, React Router V7, Expo
+
+
+Architecture 
+-----------------
+     build tool             : vite 
+     Language               : typescript 
+     Compiler               : react-compiler 
+     react version          : react19
+     form handling          : react-hook-form, formik, etc.
+     form valiation         : zod, yup, joi, etc. 
+     http/network calls     : fetch / axios library  
+     routing                : react-rounter v6, v7, v8
+     client state mgmt      : Zustand, redux-toolkit, mobx, redux-observation, redux-thunk, redux-saga, redux-persist, redux-forms
+     UI libraries           : Bootstrap, semanticUI, your own library 
+
+
+React + Vite                        next.js                                 TanStack 
+-----------------------             --------------                          -------------
+Build tool + libraries              full-stack framework                     full-stack framework 
+CSR                                 Server components, SSG, hybrid
+
+
+
+
+ReactJS Project 
+-------------------
+    - "react" library 
+        - helps to create / compose components 
+
+    - "react-dom" library 
+        - responsible to render the components 
+
+1. Components 
+    - represents a piece / section / part etc. on a webpage 
+    - a component is javascript function, returns the markup (UI description) 
+
+
+        function Header() {
+            return (
+                //jsx/tsx code 
+                <div>
+                    <h1>This is heading</h1>
+                </div>
+            )
+        }
+
+        const root = createRoot(document.getElementById('root))
+        root.render(<Header />)
+        
+
+2. JSX / TSX 
+    - JSX   : javascript + html like syntax
+    - TSX   : typescript + jsx
+    - javascript extension used to describe UI in reactjs 
+    - both jsx/tsx let you write React Component and describe the UI using jsx syntax 
+        - jsx syntax looks much similar to html 
+    - jsx code is converted to its equivalant js code 
+    - Babel does that conversion 
+
+3. State 
+
+
+
+Forms in React 
+------------------
+    - capture the values entered into the form element 
+    - validate the values 
+
+
+
+    text, email, password, number, textarea, drapdown   : e.target.value 
+
+    radio, checkbox                                     : e.target.checked 
+
+    file input                                          : e.target.files
